@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
 use App\Models\Message;
+use App\Models\Conversation;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -13,10 +14,15 @@ class MessageController extends Controller
      */
     public function index(Request $request)
     {
-        $channel = $request->query('channel', 'general');
-        
-        return Message::where('channel', $channel)
-            ->with('user')
+        $conversationId = $request->query('conversation_id');
+
+        $query = Message::query();
+
+        if ($conversationId) {
+            $query->where('conversation_id', $conversationId);
+        }
+
+        return $query->with('user', 'conversation')
             ->orderBy('created_at', 'desc')
             ->paginate(50);
     }
@@ -28,11 +34,18 @@ class MessageController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
-            'channel' => 'required|string|max:50',
+            'conversation_id' => 'required|exists:conversations,id',
         ]);
 
+        $conversation = Conversation::findOrFail($validated['conversation_id']);
+
+        // Verificar que el usuario pertenece a esta conversación
+        if (!auth()->user()->conversations->contains($conversation)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $message = auth()->user()->messages()->create($validated);
-        $message->load('user');
+        $message->load('user', 'conversation');
 
         MessageSent::dispatch($message);
 
@@ -44,7 +57,7 @@ class MessageController extends Controller
      */
     public function show(Message $message)
     {
-        return $message->load('user');
+        return $message->load('user', 'conversation');
     }
 
     /**
