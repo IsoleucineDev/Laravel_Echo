@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\Api\ConversationController;
+use App\Http\Controllers\Api\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Support\Facades\Broadcast;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +32,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('conversations/{conversation}/users', [ConversationController::class, 'addUser']);
     Route::delete('conversations/{conversation}/users', [ConversationController::class, 'removeUser']);
 
-    // Message routes
-    Route::apiResource('messages', MessageController::class);
+    // Message routes - nested under conversations
+    Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
+    Route::get('conversations/{conversation}/messages', [MessageController::class, 'index']);
+    Route::get('conversations/{conversation}/messages/{message}', [MessageController::class, 'show']);
+    Route::put('conversations/{conversation}/messages/{message}', [MessageController::class, 'update']);
+    Route::delete('conversations/{conversation}/messages/{message}', [MessageController::class, 'destroy']);
 });
