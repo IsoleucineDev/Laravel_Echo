@@ -6,6 +6,7 @@ use App\Events\ConversationUpdated;
 use App\Events\UserJoinedConversation;
 use App\Events\UserLeftConversation;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ConversationResource;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,11 +23,11 @@ class ConversationController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(15);
 
-        return response()->json($conversations);
+        return ConversationResource::collection($conversations);
     }
 
     /**
-     * Store a newly created resource in storage.
+     *Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
@@ -35,9 +36,14 @@ class ConversationController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
+        $validated['created_by'] = auth()->id();
+
         $conversation = Conversation::create($validated);
 
-        return response()->json($conversation, Response::HTTP_CREATED);
+		return response()->json([
+    		'data' => new ConversationResource($conversation->load('users', 'messages')),
+		], Response::HTTP_CREATED);
+
     }
 
     /**
@@ -47,7 +53,7 @@ class ConversationController extends Controller
     {
         $conversation->load('users', 'messages.user');
 
-        return response()->json($conversation);
+        return new ConversationResource($conversation);
     }
 
     /**
@@ -64,7 +70,7 @@ class ConversationController extends Controller
 
         ConversationUpdated::dispatch($conversation);
 
-        return response()->json($conversation);
+        return new ConversationResource($conversation);
     }
 
     /**
@@ -74,7 +80,7 @@ class ConversationController extends Controller
     {
         $conversation->delete();
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response()->json(['message' => 'Conversation deleted successfully']);
     }
 
     /**
@@ -83,20 +89,19 @@ class ConversationController extends Controller
     public function addUser(Request $request, Conversation $conversation)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
-        $user = User::find($validated['user_id']);
-
-        if ($conversation->users()->where('user_id', $user->id)->exists()) {
-            return response()->json(['message' => 'User already in conversation'], Response::HTTP_CONFLICT);
+        foreach ($validated['user_ids'] as $userId) {
+            if (!$conversation->users()->where('user_id', $userId)->exists()) {
+                $conversation->users()->attach($userId);
+                $user = User::find($userId);
+                UserJoinedConversation::dispatch($user, $conversation);
+            }
         }
 
-        $conversation->users()->attach($user);
-
-        UserJoinedConversation::dispatch($user, $conversation);
-
-        return response()->json(['message' => 'User added successfully']);
+        return response()->json(['message' => 'Users added successfully']);
     }
 
     /**
@@ -105,19 +110,18 @@ class ConversationController extends Controller
     public function removeUser(Request $request, Conversation $conversation)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
-        $user = User::find($validated['user_id']);
-
-        if (!$conversation->users()->where('user_id', $user->id)->exists()) {
-            return response()->json(['message' => 'User not in conversation'], Response::HTTP_NOT_FOUND);
+        foreach ($validated['user_ids'] as $userId) {
+            if ($conversation->users()->where('user_id', $userId)->exists()) {
+                $conversation->users()->detach($userId);
+                $user = User::find($userId);
+                UserLeftConversation::dispatch($user, $conversation);
+            }
         }
 
-        $conversation->users()->detach($user);
-
-        UserLeftConversation::dispatch($user, $conversation);
-
-        return response()->json(['message' => 'User removed successfully']);
+        return response()->json(['message' => 'Users removed successfully']);
     }
 }

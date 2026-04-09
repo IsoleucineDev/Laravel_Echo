@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageResource;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
@@ -18,10 +19,10 @@ class MessageController extends Controller
     {
         $messages = $conversation->messages()
             ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->paginate(50);
+            ->orderBy('created_at', 'asc')
+            ->paginate(10);
 
-        return response()->json($messages);
+        return MessageResource::collection($messages);
     }
 
     /**
@@ -42,7 +43,10 @@ class MessageController extends Controller
 
         MessageSent::dispatch($message);
 
-        return response()->json($message, Response::HTTP_CREATED);
+		return response()->json([
+    		'data' => new MessageResource($message),
+		], Response::HTTP_CREATED);
+
     }
 
     /**
@@ -56,7 +60,7 @@ class MessageController extends Controller
 
         $message->load('user');
 
-        return response()->json($message);
+        return new MessageResource($message);
     }
 
     /**
@@ -78,7 +82,7 @@ class MessageController extends Controller
 
         $message->update($validated);
 
-        return response()->json($message);
+        return new MessageResource($message);
     }
 
     /**
@@ -96,6 +100,6 @@ class MessageController extends Controller
 
         $message->delete();
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response()->json(['message' => 'Message deleted successfully']);
     }
 }
