@@ -4,6 +4,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ConversationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Broadcasting\BroadcastManager;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Broadcasting authentication
+Route::post('/broadcasting/auth', function (Request $request) {
+    return Broadcast::auth($request);
+})->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     // Conversation routes

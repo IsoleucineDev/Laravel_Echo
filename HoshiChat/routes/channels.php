@@ -1,18 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
+use App\Models\Conversation;
 
-/*
-|--------------------------------------------------------------------------
-| Broadcast Channels
-|--------------------------------------------------------------------------
-|
-| Here you may register all of the event broadcasting channels that your
-| application supports. The required channels are declared here while
-| optional channels may be registered when needed.
-|
-*/
+Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
 
-Broadcast::channel('chat', function () {
-    return true;
+Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
+    $conversation = Conversation::find($conversationId);
+    
+    if (!$conversation) {
+        return false;
+    }
+    
+    return $user->conversations->contains($conversation);
 });
