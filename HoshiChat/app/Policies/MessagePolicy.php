@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Policies;
 
 use App\Models\Message;
@@ -6,15 +8,23 @@ use App\Models\User;
 class MessagePolicy
 {
     /**
-     * Cualquier usuario autenticado puede ver la lista de mensajes.
+     * Determine whether the user can view any messages.
      */
     public function viewAny(User $user): bool
     {
-        return true; 
+        return true;
     }
 
     /**
-     * Un usuario puede crear mensajes si está autenticado.
+     * Determine whether the user can view the message.
+     */
+    public function view(User $user, Message $message): bool
+    {
+        return $user->conversations->contains($message->conversation_id);
+    }
+
+    /**
+     * Determine whether the user can create messages.
      */
     public function create(User $user): bool
     {
@@ -22,17 +32,35 @@ class MessagePolicy
     }
 
     /**
-     * Solo el dueño del mensaje puede editarlo.
+     * Determine whether the user can update the message.
      */
     public function update(User $user, Message $message): bool
+    {
+        return $user->id === $message->user_id && 
+               $user->conversations->contains($message->conversation_id);
+    }
+
+    /**
+     * Determine whether the user can delete the message.
+     */
+    public function delete(User $user, Message $message): bool
+    {
+        return $user->id === $message->user_id && 
+               $user->conversations->contains($message->conversation_id);
+    }
+
+    /**
+     * Determine whether the user can restore the message.
+     */
+    public function restore(User $user, Message $message): bool
     {
         return $user->id === $message->user_id;
     }
 
     /**
-     * Solo el dueño puede eliminarlo.
+     * Determine whether the user can permanently delete the message.
      */
-    public function delete(User $user, Message $message): bool
+    public function forceDelete(User $user, Message $message): bool
     {
         return $user->id === $message->user_id;
     }
