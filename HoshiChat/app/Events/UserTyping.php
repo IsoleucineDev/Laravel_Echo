@@ -2,25 +2,27 @@
 
 namespace App\Events;
 
-use App\Models\Message;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class UserTyping implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Message $message;
+    public User $user;
+    public int $conversationId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Message $message)
+    public function __construct(User $user, int $conversationId)
     {
-        $this->message = $message->load('user', 'conversation');
+        $this->user = $user;
+        $this->conversationId = $conversationId;
     }
 
     /**
@@ -31,7 +33,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('conversation.' . $this->message->conversation_id),
+            new Channel('conversation.' . $this->conversationId),
         ];
     }
 
@@ -41,14 +43,9 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'content' => $this->message->content,
-            'user' => [
-                'id' => $this->message->user->id,
-                'name' => $this->message->user->name,
-            ],
-            'conversation_id' => $this->message->conversation_id,
-            'created_at' => $this->message->created_at->toIso8601String(),
+            'user_id' => $this->user->id,
+            'user_name' => $this->user->name,
+            'conversation_id' => $this->conversationId,
         ];
     }
 }
