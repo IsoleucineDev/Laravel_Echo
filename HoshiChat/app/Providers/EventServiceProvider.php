@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Events\MessageSent;
+use App\Events\ConversationUpdated;
+use App\Events\UserJoinedConversation;
+use App\Events\UserLeftConversation;
+use App\Listeners\SendMessageNotification;
+use App\Listeners\UpdateConversationUsers;
+use App\Listeners\NotifyUserJoined;
+use App\Listeners\NotifyUserLeft;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +25,18 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        MessageSent::class => [
+            SendMessageNotification::class,
+        ],
+        ConversationUpdated::class => [
+            UpdateConversationUsers::class,
+        ],
+        UserJoinedConversation::class => [
+            NotifyUserJoined::class,
+        ],
+        UserLeftConversation::class => [
+            NotifyUserLeft::class,
         ],
     ];
 
@@ -40,4 +60,3 @@ class EventServiceProvider extends ServiceProvider
         return false;
     }
 }
-
