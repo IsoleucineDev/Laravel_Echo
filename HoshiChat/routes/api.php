@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ConversationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Conversation routes
+    Route::apiResource('conversations', ConversationController::class);
+    Route::post('conversations/{conversation}/users', [ConversationController::class, 'addUser']);
+    Route::delete('conversations/{conversation}/users', [ConversationController::class, 'removeUser']);
+
+    // Message routes
     Route::apiResource('messages', MessageController::class);
 });
