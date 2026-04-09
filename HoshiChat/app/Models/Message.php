@@ -7,12 +7,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Message extends Model
 {
-    use HasFactory;
-
-    protected $fillable = ['username', 'body'];
+    protected $fillable = [
+        'user_id',
+        'content',
+        'channel',
+    ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the user that owns the message.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

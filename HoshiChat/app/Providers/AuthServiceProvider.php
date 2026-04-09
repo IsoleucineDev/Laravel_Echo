@@ -2,22 +2,25 @@
 
 namespace App\Providers;
 
+use App\Models\Message;
+use App\Policies\MessagePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The policy mappings for the application.
+     * El mapeo de políticas para la aplicación.
+     * Aquí vinculamos el Modelo con su Guardia (Policy).
      *
      * @var array
      */
     protected $policies = [
-        // 'App\Models\User' => 'App\Policies\UserPolicy',
+        Message::class => MessagePolicy::class,
     ];
 
     /**
-     * Register any authentication / authorization services.
+     * Registra cualquier servicio de autenticación / autorización.
      *
      * @return void
      */
@@ -25,6 +28,13 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        /**
+         * Opcional: Definir un Super Admin.
+         * Esto permite que el usuario con ID 1 se salte las reglas de las policies
+         * (Muy útil para debugear el chat).
+         */
+        Gate::before(function ($user, $ability) {
+            return $user->id === 1 ? true : null;
+        });
     }
 }
