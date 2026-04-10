@@ -8,7 +8,14 @@ export function useWebSocket(echoInstance) {
         throw new Error('[hoshichat] useWebSocket: an Echo instance is required.');
     }
 
-    /** @type {Record<string|number, import('laravel-echo').default>} */
+    /**
+     * Internal map of active channel subscriptions.
+     * Keys are conversationId (string | number); values are the Echo private-channel
+     * objects returned by `echoInstance.private()`. Used to avoid duplicate subscriptions
+     * and to allow targeted or bulk unsubscription.
+     *
+     * @type {Record<string|number, object>}
+     */
     const listeners = {};
 
     /**
