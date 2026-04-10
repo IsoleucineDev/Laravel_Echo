@@ -2,28 +2,26 @@
 
 namespace App\Events;
 
-use App\Models\Conversation;
-use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserLeftConversation implements ShouldBroadcast
+class MessageDeleted implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public User $user;
-    public Conversation $conversation;
+    public int $messageId;
+    public int $conversationId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Conversation $conversation)
+    public function __construct(int $messageId, int $conversationId)
     {
-        $this->user = $user;
-        $this->conversation = $conversation;
+        $this->messageId = $messageId;
+        $this->conversationId = $conversationId;
     }
 
     /**
@@ -34,7 +32,7 @@ class UserLeftConversation implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation.' . $this->conversation->id),
+            new PrivateChannel('conversation.' . $this->conversationId),
         ];
     }
 
@@ -44,12 +42,8 @@ class UserLeftConversation implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ],
-            'conversation_id' => $this->conversation->id,
-            'message' => $this->user->name . ' left the conversation',
+            'id' => $this->messageId,
+            'conversation_id' => $this->conversationId,
         ];
     }
 }

@@ -13,7 +13,7 @@ export function useWebSocket() {
     };
 
     const isConnected = () => {
-        return true;
+        return window.Echo?.connector?.pusher?.connection?.state === 'connected';
     };
 
     return {

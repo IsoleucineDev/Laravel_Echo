@@ -5,10 +5,20 @@ window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 'test_key',
-    cluster: 'mt1',
-    forceTLS: false,
-    encrypted: false,
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
+    wsHost: import.meta.env.VITE_PUSHER_HOST ?? undefined,
+    wsPort: import.meta.env.VITE_PUSHER_PORT ?? undefined,
+    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+    encrypted: true,
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            Authorization: localStorage.getItem('auth_token')
+                ? 'Bearer ' + localStorage.getItem('auth_token')
+                : '',
+        },
+    },
 });
 
 window.conversationListeners = {};
@@ -20,7 +30,7 @@ window.subscribeToConversation = (conversationId, callbacks = {}) => {
         return;
     }
     
-    const channel = window.Echo.channel(channelName);
+    const channel = window.Echo.private(channelName);
     
     channel.listen('MessageSent', (event) => {
         console.log('Nuevo mensaje:', event);
@@ -51,6 +61,11 @@ window.subscribeToConversation = (conversationId, callbacks = {}) => {
         console.log('Conversacion actualizada:', event);
         if (callbacks.onConversationUpdated) callbacks.onConversationUpdated(event);
     });
+
+    channel.listen('UserTyping', (event) => {
+        console.log('Usuario escribiendo:', event);
+        if (callbacks.onUserTyping) callbacks.onUserTyping(event);
+    });
     
     window.conversationListeners[conversationId] = channel;
     console.log(`Suscrito a conversacion ${conversationId}`);
@@ -58,7 +73,7 @@ window.subscribeToConversation = (conversationId, callbacks = {}) => {
 
 window.unsubscribeFromConversation = (conversationId) => {
     if (window.conversationListeners[conversationId]) {
-        window.Echo.leaveChannel(`conversation.${conversationId}`);
+        window.Echo.leaveChannel(`private-conversation.${conversationId}`);
         delete window.conversationListeners[conversationId];
         console.log(`Desuscrito de conversacion ${conversationId}`);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ConversationUpdated;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,7 +43,9 @@ class ConversationController extends Controller
         ]);
 
         $conversation->update($validated);
-        
+
+        ConversationUpdated::dispatch($conversation);
+
         return response()->json(['data' => $conversation]);
     }
 
