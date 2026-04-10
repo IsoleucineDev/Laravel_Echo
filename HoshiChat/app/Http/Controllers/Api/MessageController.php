@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageDeleted;
+use App\Events\MessageSent;
+use App\Events\MessageUpdated;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
@@ -27,7 +30,9 @@ class MessageController extends Controller
         ]);
 
         $message->load('user');
-        
+
+        MessageSent::dispatch($message);
+
         return response()->json(['data' => $message], 201);
     }
 
@@ -39,13 +44,21 @@ class MessageController extends Controller
 
         $message->update($validated);
         $message->load('user');
-        
+
+        MessageUpdated::dispatch($message);
+
         return response()->json(['data' => $message]);
     }
 
     public function destroy(Conversation $conversation, Message $message)
     {
+        $messageId = $message->id;
+        $conversationId = $message->conversation_id;
+
         $message->delete();
+
+        MessageDeleted::dispatch($messageId, $conversationId);
+
         return response()->json(null, 204);
     }
 }

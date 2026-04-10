@@ -2,28 +2,25 @@
 
 namespace App\Events;
 
-use App\Models\Conversation;
-use App\Models\User;
+use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserLeftConversation implements ShouldBroadcast
+class MessageUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public User $user;
-    public Conversation $conversation;
+    public Message $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Conversation $conversation)
+    public function __construct(Message $message)
     {
-        $this->user = $user;
-        $this->conversation = $conversation;
+        $this->message = $message->load('user', 'conversation');
     }
 
     /**
@@ -34,7 +31,7 @@ class UserLeftConversation implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation.' . $this->conversation->id),
+            new PrivateChannel('conversation.' . $this->message->conversation_id),
         ];
     }
 
@@ -44,12 +41,14 @@ class UserLeftConversation implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
+            'id' => $this->message->id,
+            'content' => $this->message->content,
             'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
+                'id' => $this->message->user->id,
+                'name' => $this->message->user->name,
             ],
-            'conversation_id' => $this->conversation->id,
-            'message' => $this->user->name . ' left the conversation',
+            'conversation_id' => $this->message->conversation_id,
+            'updated_at' => $this->message->updated_at->toIso8601String(),
         ];
     }
 }
