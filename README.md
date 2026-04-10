@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 💬 HoshiChat
+# HoshiChat
 
 ### Real-time Chat con Laravel Echo + Vue 3 + WebSockets
 
@@ -17,20 +17,30 @@
 
 ---
 
-# ✨ Características
+# (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ Links Importantes
 
-⚡ Chat en tiempo real
-🔌 WebSockets con Laravel Echo
-📡 Broadcasting automático
-⚙️ Vue 3 + Vite
-📱 Responsive UI
-📦 NPM Package reutilizable
-🧩 Arquitectura limpia
-🚀 Alta performance (<100ms)
+Video Demo
+https://www.youtube.com/watch?v=JxSNsFV6N2E&feature=youtu.be
+
+Guías de Instalación
+https://isoleucinedev.github.io/HoshiChat/
 
 ---
 
-# 🖼️ Demo Visual
+# (≧◡≦) Características
+
+(づ｡◕‿‿◕｡)づ Chat en tiempo real
+(ノ°〇°)ノ WebSockets con Laravel Echo
+(☞ﾟヮﾟ)☞ Broadcasting automático
+(￣▽￣) Vue 3 + Vite
+(⌐■_■) Responsive UI
+(っ◔◡◔)っ NPM Package reutilizable
+(ﾉ´ヮ`)ﾉ*: ･ﾟ Arquitectura limpia
+(⚡‿⚡) Alta performance (<100ms)
+
+---
+
+# (づ￣ ³￣)づ Demo Visual
 
 ```
 ┌──────────────────────┐        ┌──────────────────────┐
@@ -46,7 +56,7 @@
 
 ---
 
-# 🏗️ Arquitectura
+# (☞ﾟヮﾟ)☞ Arquitectura
 
 ```
 Frontend (Vue 3 + Vite)
@@ -65,7 +75,7 @@ SQLite / MySQL
 
 ---
 
-# 🚀 Quick Start
+# (ノ^_^)ノ Inicio Rápido
 
 ## Requisitos
 
@@ -76,7 +86,7 @@ SQLite / MySQL
 
 ---
 
-# 🪟 Windows
+# (づ｡◕‿‿◕｡)づ Windows
 
 ```bash
 git clone https://github.com/IsoleucineDev/Laravel_Echo.git
@@ -105,7 +115,7 @@ http://localhost:8000/chat
 
 ---
 
-# 🔐 Login de prueba
+# (¬‿¬ ) Login de prueba
 
 ```
 Email: user1@example.com
@@ -116,7 +126,7 @@ Abrir 2 navegadores para probar tiempo real.
 
 ---
 
-# ⚡ Cómo funciona
+# (づ｡◕‿‿◕｡)づ Cómo funciona
 
 ```
 Usuario escribe mensaje
@@ -138,7 +148,7 @@ UI se actualiza instantáneamente
 
 ---
 
-# 🔌 Laravel Echo
+# (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ Laravel Echo
 
 Backend:
 
@@ -157,7 +167,7 @@ window.Echo.channel('conversation.1')
 
 ---
 
-# 📂 Estructura
+# (づ￣ ³￣)づ Estructura
 
 ```
 HoshiChat
@@ -179,7 +189,7 @@ HoshiChat
 
 ---
 
-# 📦 NPM Package
+# (っ◔◡◔)っ NPM Package
 
 ```
 npm install @hoshichat/laravel-echo-ui
@@ -196,7 +206,7 @@ Incluye:
 
 ---
 
-# 🧪 Comandos útiles
+# (ノಠ益ಠ)ノ Comandos útiles
 
 ```bash
 php artisan route:list
@@ -208,39 +218,19 @@ php artisan migrate:fresh --seed
 
 ---
 
-# 🛠️ Troubleshooting
-
-Error 500:
-
-```bash
-php artisan optimize:clear
-```
-
-Reset DB:
-
-```bash
-rm database/database.sqlite
-touch database/database.sqlite
-
-php artisan migrate
-php artisan db:seed --class=ConversationSeeder
-```
-
----
-
-# ⚡ Performance
+# (⚡‿⚡) Performance
 
 | Feature   | HoshiChat |
 | --------- | --------- |
-| Realtime  | ✅         |
-| WebSocket | ✅         |
-| Polling   | ❌         |
+| Realtime  | Sí        |
+| WebSocket | Sí        |
+| Polling   | No        |
 | Latency   | <100ms    |
-| Scalable  | ✅         |
+| Scalable  | Sí        |
 
 ---
 
-# 🤝 Contribuir
+# (づ｡◕‿‿◕｡)づ Contribuir
 
 ```bash
 git checkout -b feature/new-feature
@@ -252,7 +242,7 @@ Pull Request.
 
 ---
 
-# 👨‍💻 Autores
+# (ﾉ´ヮ`)ﾉ*: ･ﾟ Autores
 
 Marco
 Yael
@@ -260,20 +250,11 @@ Ileana
 
 ---
 
-# ⭐ Soporte
-
-Si te gustó el proyecto:
-
-⭐ Dale Star en GitHub
-🐛 Reporta bugs
-🚀 Contribuye
-
----
-
 <div align="center">
 
-### HoshiChat — Real-time Laravel Echo Chat
+HoshiChat — Real-time Laravel Echo Chat
 
 </div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f2027,50:203a43,100:2c5364&height=120&section=footer"/>
+
