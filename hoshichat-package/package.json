@@ -1,0 +1,42 @@
+{
+  "name": "@hoshichat/laravel-echo-ui",
+  "version": "1.0.0",
+  "description": "Reusable Vue 3 chat UI components and composables for Laravel Echo / WebSocket applications",
+  "main": "src/index.js",
+  "keywords": [
+    "chat",
+    "laravel",
+    "echo",
+    "websocket",
+    "vue3",
+    "real-time",
+    "pusher",
+    "hoshichat"
+  ],
+  "author": "HoshiChat",
+  "license": "MIT",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.0.0",
+    "laravel-echo": "^1.13.0",
+    "pusher-js": "^8.0.0",
+    "vue-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "vue": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IsoleucineDev/Laravel_Echo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IsoleucineDev/Laravel_Echo/issues"
+  },
+  "homepage": "https://github.com/IsoleucineDev/Laravel_Echo#readme"
+}
